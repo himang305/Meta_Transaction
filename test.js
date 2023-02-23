@@ -1,3 +1,4 @@
+
 const { expect } = require("chai");
 const { BigNumber } = require("ethers");
 const { arrayify, parseEther } = require("ethers/lib/utils");
@@ -22,9 +23,9 @@ describe("MetaTokenTransfer", function () {
       // minting 10000 tokens using the sender address
       const tenThousandTokens = parseEther("10000");
       const txInstance = randomTokenContract.connect(userAddress);
-      const tx = txInstance.freeMint(tenThousandTokens);
+      const tx = await txInstance.freeMint(tenThousandTokens);
 
-      await tx.await()
+      // await tx.await()
 
       // geting approval from the sender for infinite supply of tokens
       const approval = await txInstance.approve(
@@ -33,7 +34,7 @@ describe("MetaTokenTransfer", function () {
         "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" // is eqaul to 2^256 -1
         )
       )
-      await approval.await()
+      // await approval.await()
 
     // using nonce as a attribute to get diffrent hashes for same amount of transfer
     let nonce = 1;
@@ -62,7 +63,7 @@ describe("MetaTokenTransfer", function () {
       nonce
     )
 
-    await metaTx.await();
+    // await metaTx.await();
     // fetching the balance of the sender and the recipient 
     let userBalance = await randomTokenContract.balanceOf(userAddress.address);
     let recipientBalance = await randomTokenContract.balanceOf(
@@ -86,7 +87,7 @@ describe("MetaTokenTransfer", function () {
     );
     const signature2 = await userAddress.signMessage(arrayify(messageHash2));
     // Have the relayer execute the transaction on behalf of the user
-    const metaTxn2 = await relayerSenderContractInstance.tokenTransfer(
+    const metaTxn2 = await tokenSenderContract.tokenTransfer(
       userAddress.address,
       transferAmountOfTokens,
       recipientAddress.address,
@@ -94,7 +95,7 @@ describe("MetaTokenTransfer", function () {
       signature2,
       nonce,
     );
-    await metaTxn2.await();
+    // await metaTxn2.await();
 
     // Check the user's balance decreased, and recipient got 10 tokens
     userBalance = await randomTokenContract.balanceOf(userAddress.address);
@@ -106,3 +107,4 @@ describe("MetaTokenTransfer", function () {
     expect(recipientBalance.eq(parseEther("20"))).to.be.true;
     });
 });
+
